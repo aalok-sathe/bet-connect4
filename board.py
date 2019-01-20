@@ -87,6 +87,7 @@ class Board:
         return win
 
     def undo(self):
+        raise NotImplementedError('not yet implemented')
         if self.lastmove is None: raise
         pass
 
