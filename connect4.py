@@ -222,6 +222,10 @@ class Game(Cmd):
             resets the current game progress and starts over
 
 
+        {bold}help|?{reset}:
+            show this usage message
+
+
         {bold}exit|quit|q|close{reset}:
             exits the program
 
