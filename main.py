@@ -121,11 +121,21 @@ class Game(Cmd):
             if len(spl) == 2:
                 val = spl[1]
             win = self.board.put(player=self.turn, col=col, value=val)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 1e36cc9902d4618851c916c5091cd46d98c41792
             if win:
                 tprint('player {} has won!'.format(self.turn))
                 print(REVERSE, [RED, YELLOW][self.turn],
                       '{:>{w}}'.format(w=80), RESET)
                 raise SystemExit
+<<<<<<< HEAD
+=======
+=======
+            print(win)
+>>>>>>> 09ded09e4ff81429bae403a28ca8bc0afdf058e2
+>>>>>>> 1e36cc9902d4618851c916c5091cd46d98c41792
             self.turn = (self.turn + 1) % 2
             self.status()
         except (ValueError, IndexError):
