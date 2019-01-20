@@ -50,14 +50,28 @@ class Board:
 
     def __str__(self):
         # string = REVERSE
-        string += ' - '*self.C + '\n'
+        off = '\t'
+        # fill = ' '*5
+        hsep = '-'
+        vsep = '\n\n'
+
+        string = ''
+        string += off + '{:{fill}>5}'.format(hsep, fill=hsep)*(self.C+1) + '\n'
+
         for row in reversed(self.board):
+            string += off
             for colval in row:
-                string += ' ' + str(colval) + ' '
-            string += '\n'
-        string += ' - '*self.C + '\n'
-        string += ''.join([" {} ".format(i) for i in range(1, self.C+1)]) + '\n'
-        string += ' - '*self.C + '\n'
+                col, cstr = colval.str_()
+                string += '{}{:>5}{}'.format(col, cstr, RESET)
+            string += vsep
+
+        string += off + '{:{fill}>5}'.format(hsep, fill=hsep)*(self.C+1) + '\n'
+
+        # column names
+        string += off + ''.join([('{:>5}').format(i)
+                                    for i in range(1, self.C+1)]) + '\n'
+
+        string += off + '{:{fill}>5}'.format(hsep, fill=hsep)*(self.C+1) + '\n'
         # string += RESET
         return string
 
@@ -75,7 +89,6 @@ class Board:
         self.board[self.height[col]][col] = self.Coin(player, value)
         self.checkwin(self.height[col], col)
         self.height[col] += 1
-
 
     def undo(self):
         if self.lastmove is None: raise
