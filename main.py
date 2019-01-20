@@ -15,6 +15,15 @@ tprint("bet connect 4", font='bell')
 class Game(Cmd):
     board = None
 
+    class Player:
+        money = None
+
+        def __init__(self, money=0):
+            money = money
+
+        def placebet(self, value):
+            pass
+
     def __init__(self, *args):
         super().__init__()
 
