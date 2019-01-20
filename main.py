@@ -3,29 +3,57 @@ from cmd import Cmd
 from color import *
 from board import Board
 from art import tprint
+import random
 
 def err():
     print(RED + 'ERR: ' + RESET, file=stderr, end='')
 def info():
-    print(YELLOW + 'ERR: ' + RESET, file=stderr, end='')
+    print(YELLOW + 'INFO: ' + RESET, file=stderr, end='')
 
 print("welcome to\n" + BOLD + "bet" + RED + "connect" + GREEN + "4" + RESET)
 tprint("bet connect 4", font='bell')
 
 class Game(Cmd):
+    intro = '''
+    This program comes with ABSOLUTELY NO WARRANTY.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions. See the GNU GPL v3.
+    For usage instructions, type "help"
+    '''
     board = None
+    turn = None
+    STARTMONEY = 100
 
     class Player:
         money = None
+        num = None
 
-        def __init__(self, money=0):
-            money = money
+        def __init__(self, num=None, money=0):
+            if num is not None:
+                self.num = num
+            else:
+                raise ValueError('playernum cannot be `None`')
+            self.money = money
+
+        def __str__(self):
+            blurb = 'player{num}'.format(num=self.num)
+            money = 'remaining money: {mon}'.format(mon=self.money)
+            text = '{:>20} {:>40}'.format(blurb, money)
+            return [RED, YELLOW][self.num] + text + RESET
 
         def placebet(self, value):
-            pass
+            if value <= self.money:
+                self.money -= value
+                return value
+            return 0
 
     def __init__(self, *args):
         super().__init__()
+
+    # def do_config(self, arg):
+    #     '''set config values
+    #     usage:
+    #     '''
 
     def do_new_game(self, arg):
         '''create a new game.
