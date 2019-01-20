@@ -11,6 +11,8 @@ in your terminal!
 
 ---
 
+![example usage screenshot](landing-scrsht.png)
+
 ### Features:
 #### for the end user
 - whole new strategy game involving betting on your move
