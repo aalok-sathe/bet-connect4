@@ -8,7 +8,7 @@ import inspect
 import types
 
 LICENSE = '''
-This program is free software: you can redistribute it and/or modify
+    This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -34,7 +34,7 @@ def info():
 #         struct.pack('HHHH', 0, 0, 0, 0)))
 #     return tw, th
 
-print("welcome to\n" + BOLD + "bet" + RED + "connect" + GREEN + "4" + RESET)
+print("welcome to\n" + BOLD + "bet" + YELLOW + "connect" + RED + "4" + RESET)
 tprint("bet connect 4", font='bell')
 
 def mklooped(cls):
@@ -48,10 +48,13 @@ def mklooped(cls):
 @mklooped
 class Game(Cmd):
     intro = '''
-    This program comes with ABSOLUTELY NO WARRANTY.
-    This is free software, and you are welcome to redistribute it
-    under certain conditions. See the GNU GPL v3.
-    For usage instructions, type 'help' or '?'
+    (C) 2019
+    Aalok S. and Tuan L.
+    Released under the GNU General Public License v3 (or later).
+
+    For help about all commands, type 'helpall'
+    For specific method documentation, type 'help' or '?'.
+    For license statement, type 'license'.
     '''
     board = None
     turn = None
@@ -91,10 +94,13 @@ class Game(Cmd):
 
 
     def newgame(self, arg=None) -> 'loop':
-        '''create a new game.
-        usage: new_game [rows cols]
-        default value: new_game [8 9]
+        '''\033[;1m
+        newgame [ROW COL]:\033[0;0m
+            initiates a game of bet-connect4
+
+            [ROW COL]: makes the board dimensions row, col (default: 8 9)
         '''
+
         if arg is not None and len(arg):
             try:
                 r, c = (int(x) for x in arg.split())
@@ -111,7 +117,12 @@ class Game(Cmd):
         self.status()
 
     def status(self, arg=None) -> 'loop':
-        '''show the current game status'''
+        '''\033[;1m
+        status:\033[0;0m
+            shows current game board and status
+            including players, their money, and who goes next
+        '''
+
         if self.board is None:
             err()
             print('need to create a new game first', file=stderr)
@@ -126,7 +137,14 @@ class Game(Cmd):
             print(playerstats[1])
 
     def play(self, arg=None) -> 'loop':
-        '''play the next turn'''
+        '''\033[;1m
+        [play] COL [VALUE]:\033[0;0m
+            plays the next turn
+
+            COL (required): column number to play coin in
+            [VALUE]: amount to bet on this coin location
+        '''
+
         if self.board is None:
             err()
             print('need to create a new game first', file=stderr)
@@ -139,17 +157,19 @@ class Game(Cmd):
                 val = spl[1]
             win, best = self.board.put(player=self.turn, col=col, value=val,
                                        wincondition=self.winreq)
-            if win:
-                print(REVERSE, [RED, YELLOW][self.turn],
-                      '{o:>{w}}'.format(o='', w=80), RESET, file=stderr)
-                tprint('player  {}\nhas won!\n{} in a row'.format(self.turn,
-                                                                  best))
-                print(REVERSE, [RED, YELLOW][self.turn],
-                      '{o:>{w}}\n'.format(o='', w=80), RESET, file=stderr)
-                self.exit(None)
 
             self.turn = (self.turn + 1) % 2
             self.status()
+            if win:
+                whowon = (self.turn + 1) % 2
+                print(REVERSE, [RED, YELLOW][whowon],
+                      '{o:>{w}}'.format(o='', w=80), RESET, file=stderr)
+                tprint('player  {}\nhas won!\n{} in a row'.format(whowon,
+                                                                  best))
+                print(REVERSE, [RED, YELLOW][whowon],
+                      '{o:>{w}}\n'.format(o='', w=80), RESET, file=stderr)
+                self.exit(None)
+
         except (ValueError, IndexError):
             err()
             print('bad column index', file=stderr)
@@ -158,12 +178,27 @@ class Game(Cmd):
             print('maximum height in column reached', file=stderr)
 
     def reset(self, arg=None) -> 'loop':
+        '''\033[;1m
+        reset:\033[0;0m
+            resets the current game progress and starts over
+        '''
+
         resp = input('reset current game? [y]/n')
         if resp in {'', 'y', 'Y', 'yes', 'ye'}:
-            self.newgame()
+            self.board = None
+            # self.newgame()
         return
 
     def wincondition(self, arg=None) -> 'loop':
+        '''\033[;1m
+        wincondition [NUM]:\033[0;0m
+            show the current winning condition.
+
+            [NUM]: set the winning condition to NUM (default: 4)
+                   using this command would set the winning condition
+                   to something else.
+        '''
+
         if not arg:
             print(self.winreq)
         else:
@@ -176,6 +211,7 @@ class Game(Cmd):
 
     def emptyline(self):
         '''what to do with an empty prompt'''
+        # self.do_help(None)
         if self.board is not None:
             self.status(None)
 
@@ -189,8 +225,11 @@ class Game(Cmd):
         except ValueError:
             super().default(line)
 
-    def help(self, arg=None) -> 'loop':
-        '''show helpful usage message'''
+    def helpall(self, arg=None) -> 'loop':
+        '''
+        show helpful usage message about all commands.
+        to call, type `helpall`
+        '''
         help = '''
         {bold}newgame [ROW COL]{reset}:
             initiates a game of bet-connect4
@@ -199,10 +238,10 @@ class Game(Cmd):
 
 
         {bold}wincondition [NUM]{reset}:
-            gets the winning condition.
+            show the current winning condition.
 
-            [NUM]: set the winning condition to NUM. default is 4 ('connect 4'),
-                   so using this command would set the winning condition
+            [NUM]: set the winning condition to NUM (default: 4)
+                   using this command would set the winning condition
                    to something else.
 
 
@@ -222,9 +261,8 @@ class Game(Cmd):
             resets the current game progress and starts over
 
 
-        {bold}help|?{reset}:
-            show this usage message
-
+        {bold}helpall{reset}:
+            show this help message about all commands
 
         {bold}exit|quit|q|close{reset}:
             exits the program
@@ -237,12 +275,16 @@ class Game(Cmd):
         print(LICENSE)
 
     def exit(self, arg=None) -> 'loop':
-        '''exit program'''
+        '''\033[;1m
+        exit|quit|q|close:\033[0;0m
+            exits the program
+        '''
         raise SystemExit
 
 if __name__ == '__main__':
     prompt = Game("")
     prompt.prompt = '(betconnect4)$ '
+    prompt.doc_header = BOLD+CYAN + prompt.doc_header + RESET
     try:
     	prompt.cmdloop()
     except KeyboardInterrupt :
