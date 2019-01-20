@@ -52,14 +52,30 @@ class Board:
         string += ' - '*self.C + '\n'
         string += ''.join([" {} ".format(i) for i in range(1, self.C+1)]) + '\n'
         string += ' - '*self.C + '\n'
-        string += RESET
+        # string += RESET
         return string
 
     def construct(self):
-        board = [[0 for col in range(self.C)]
+        board = [[self.Coin() for col in range(self.C)]
                  for row in range(self.R)]
         self.board = board
+        self.height = [0] * self.C
 
-b = Board()
+    def put(self, player=0, col=None):
+        if col is None:
+            raise ValueError('no column supplied')
+        if self.height[col] >= self.R:
+            raise RuntimeError('maximum height reached')
+        self.board[self.height[col]][col] = None#TODO
+        self.height[col] += 1
 
-print(b)
+    def undo(self):
+        if self.lastmove is None: raise
+        pass
+
+    def checkwin(self, r, c):
+        pass
+
+if __name__ == '__main__':
+    b = Board()
+    print(b)
