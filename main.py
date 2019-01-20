@@ -69,11 +69,73 @@ class Game(Cmd):
                 print('usage: `new_game [rows cols]`', file=stderr)
         else:
             self.board = Board()
+        self.players = [self.Player(0, self.STARTMONEY),
+                        self.Player(1, self.STARTMONEY)]
+        self.turn = random.randint(0,1)
 
+        self.do_status()
+
+    def do_status(self, arg):
+        '''show the current game status'''
+        if self.board is None:
+            err()
+            print('need to create a new game first', file=stderr)
+        else:
+            playerstats = [str(p) for p in self.players]
+            print(self.board)
+            if self.turn == 0:
+                print(REVERSE)
+            print(playerstats[0])
+            if self.turn == 1:
+                print(REVERSE)
+            print(playerstats[1])
+
+    def do_play(self, arg):
+        '''play the next turn'''
+        if self.board is None:
+            err()
+            print('need to create a new game first', file=stderr)
+        self.turn = (self.turn + 1) % 2
+
+        self.do_status(None)
+
+    def emptyline(self):
+        '''what to do with an empty prompt'''
+        if self.board is not None:
+            self.do_status(None)
+
+    def default(self, line):
+        # print(repr(line))
+        if line in {'quit', 'q', 'exit', 'close'}:
+            self.do_exit(line)
+        super().default(line)
 
     def do_help(self, arg):
         '''show helpful usage message'''
-        pass
+        help = '''
+        {bold}new_game [row col]{reset}:
+            initiates a game of bet-connect4
+
+            [row col]: makes the board dimensions row, col
+
+
+        {bold}status{reset}:
+            shows current game board and status
+            including players, their money, and who goes next
+
+
+        {bold}play col [value]{reset}:
+            plays the next turn
+
+            col: column number to play coin in
+            [value]: amount to bet on this coin location
+
+
+        {bold}exit|quit|q|close{reset}:
+            exits the program
+
+        '''.format(bold=BOLD, reset=RESET)
+        print(help)
 
     def do_exit(self, arg):
         '''exit program'''
@@ -81,13 +143,9 @@ class Game(Cmd):
 
 if __name__ == '__main__':
     prompt = Game("")
-    prompt.prompt = '>> '
+    prompt.prompt = '(betconnect4)$ '
     try:
-    	prompt.cmdloop('''
-    This program comes with ABSOLUTELY NO WARRANTY.
-    This is free software, and you are welcome to redistribute it
-    under certain conditions. See the GNU GPL v3.
-    For usage instructions, type "help"''')
+    	prompt.cmdloop()
     except KeyboardInterrupt :
     	print("\nExiting due to KeyboardInterrupt")
     	raise SystemExit
