@@ -2,11 +2,12 @@
 convention: bottom row first
 """
 from color import *
+from sys import stdout, stderr
 
 def err():
     print(RED + 'ERR: ' + RESET, file=stderr, end='')
 def info():
-    print(YELLOW + 'ERR: ' + RESET, file=stderr, end='')
+    print(YELLOW + 'INFO: ' + RESET, file=stderr, end='')
 
 # def terminal_size():
 #     import fcntl, termios, struct
@@ -81,14 +82,15 @@ class Board:
         self.board = board
         self.height = [0] * self.C
 
-    def put(self, player=0, col=None, value=0):
+    def put(self, player=None, col=None, value=0):
         if col is None:
             raise ValueError('no column supplied')
         if self.height[col] >= self.R:
             raise RuntimeError('maximum height reached')
         self.board[self.height[col]][col] = self.Coin(player, value)
-        self.checkwin(self.height[col], col)
+        win = self.checkwin(self.height[col], col)
         self.height[col] += 1
+        return win
 
     def undo(self):
         if self.lastmove is None: raise
@@ -96,12 +98,14 @@ class Board:
 
     def checkwin(self, r, c, connect=4):
         this_coin = self.board[r][c]
+        info(); print(this_coin,r,c, file=stderr)
         for xmult in {0,1,-1}:
             for ymult in {0,1}:
                 consec = 0
                 for dist in range(1, connect):
                     try:
                         o_coin = self.board[r+ymult*dist][c+xmult*dist]
+                        if o_coin.player is None: break
                         if this_coin.player == o_coin.player:
                             consec += 1
                         else:
@@ -112,6 +116,7 @@ class Board:
                     dist *= -1
                     try:
                         o_coin = self.board[r+ymult*dist][c+xmult*dist]
+                        if o_coin.player is None: break
                         if this_coin.player == o_coin.player:
                             consec += 1
                         else:
