@@ -113,7 +113,8 @@ class Game(Cmd):
             col, val = spl[0]-1, 0
             if len(spl) == 2:
                 val = spl[1]
-            self.board.put(player=self.turn, col=col, value=val)
+            win = self.board.put(player=self.turn, col=col, value=val)
+            print(win)
             self.turn = (self.turn + 1) % 2
             self.status()
         except (ValueError, IndexError):
@@ -159,12 +160,15 @@ class Game(Cmd):
             including players, their money, and who goes next
 
 
-        {bold}play col [value]{reset}:
+        {bold}[play] col [value]{reset}:
             plays the next turn
 
-            col: column number to play coin in
+            col (required): column number to play coin in
             [value]: amount to bet on this coin location
 
+
+        {bold}reset{reset}:
+            resets the current game progress and starts over
 
         {bold}exit|quit|q|close{reset}:
             exits the program
