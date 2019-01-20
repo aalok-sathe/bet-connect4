@@ -72,7 +72,7 @@ class Game(Cmd):
         usage: new_game [rows cols]
         default value: new_game [8 9]
         '''
-        if len(arg):
+        if arg is not None and len(arg):
             try:
                 r, c = (int(x) for x in arg.split())
                 self.board = Board(r, c)
@@ -85,7 +85,7 @@ class Game(Cmd):
                         self.Player(1, self.STARTMONEY)]
         self.turn = random.randint(0,1)
 
-        self.do_status()
+        self.status()
 
     def status(self, arg=None) -> 'loop':
         '''show the current game status'''
@@ -115,7 +115,7 @@ class Game(Cmd):
                 val = spl[1]
             self.board.put(player=self.turn, col=col, value=val)
             self.turn = (self.turn + 1) % 2
-            self.do_status()
+            self.status()
         except (ValueError, IndexError):
             err()
             print('need to specify a proper column number that\'s an integer',
@@ -127,19 +127,23 @@ class Game(Cmd):
     def reset(self, arg=None) -> 'loop':
         resp = input('reset current game? [y]/n')
         if resp in {'', 'y', 'Y', 'yes', 'ye'}:
-            self.do_newgame()
+            self.newgame()
         return
 
     def emptyline(self):
         '''what to do with an empty prompt'''
         if self.board is not None:
-            self.do_status(None)
+            self.status(None)
 
     def default(self, line):
         # print(repr(line))
         if line in {'quit', 'q', 'exit', 'close'}:
-            self.do_exit(line)
-        super().default(line)
+            self.exit(line)
+        try:
+            _ = [int(x) for x in line.split()]
+            self.play(line)
+        except ValueError:
+            super().default(line)
 
     def help(self, arg=None) -> 'loop':
         '''show helpful usage message'''
