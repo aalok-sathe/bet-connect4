@@ -95,11 +95,31 @@ class Board:
         pass
 
     def checkwin(self, r, c, connect=4):
+        this_coin = self.board[r][c]
         for xmult in {0,1,-1}:
             for ymult in {0,1}:
-                cons = 0
-                for cell in range(1, connect):
-                    return
+                consec = 0
+                for dist in range(1, connect):
+                    try:
+                        o_coin = self.board[r+ymult*dist][c+xmult*dist]
+                        if this_coin.player == o_coin.player:
+                            consec += 1
+                        else:
+                            break
+                    except IndexError:
+                        break
+                for dist in range(1, connect):
+                    dist *= -1
+                    try:
+                        o_coin = self.board[r+ymult*dist][c+xmult*dist]
+                        if this_coin.player == o_coin.player:
+                            consec += 1
+                        else:
+                            break
+                    except IndexError:
+                        break
+                if consec >= connect: return True
+        return False
 
 if __name__ == '__main__':
     b = Board()
