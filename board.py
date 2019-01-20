@@ -76,13 +76,13 @@ class Board:
         self.board = board
         self.height = [0] * self.C
 
-    def put(self, player=None, col=None, value=0):
+    def put(self, player=None, col=None, value=0, wincondition=4):
         if col is None:
             raise ValueError('no column supplied')
         if self.height[col] >= self.R:
             raise RuntimeError('maximum height reached')
         self.board[self.height[col]][col] = self.Coin(player, value)
-        win = self.checkwin(self.height[col], col)
+        win = self.checkwin(self.height[col], col, wincondition)
         self.height[col] += 1
         return win
 
@@ -93,6 +93,7 @@ class Board:
     def checkwin(self, r, c, connect=4):
         this_coin = self.board[r][c]
         info(); print(this_coin,r,c, file=stderr)
+        bestconsec = 1
         for xmult in {0,1,-1}:
             for ymult in {0,1}:
                 if xmult == ymult == 0: continue
@@ -120,8 +121,9 @@ class Board:
                         break
                 info()
                 print(this_coin,xmult,ymult,consec, file=stderr)
-                if consec >= connect: return True#, xmult, ymult, consec
-        return False
+                bestconsec = max(bestconsec, consec)
+        if bestconsec >= connect: return True, bestconsec#, xmult, ymult, consec
+        return False, 0
 
 if __name__ == '__main__':
     b = Board()

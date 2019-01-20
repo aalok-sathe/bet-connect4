@@ -7,6 +7,21 @@ import random
 import inspect
 import types
 
+LICENSE = '''
+This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'''
+
 def err():
     print(RED + 'ERR: ' + RESET, file=stderr, end='')
 def info():
@@ -36,11 +51,12 @@ class Game(Cmd):
     This program comes with ABSOLUTELY NO WARRANTY.
     This is free software, and you are welcome to redistribute it
     under certain conditions. See the GNU GPL v3.
-    For usage instructions, type "help"
+    For usage instructions, type 'help' or '?'
     '''
     board = None
     turn = None
     STARTMONEY = float('inf')
+    winreq = 4
 
     class Player:
         money = None
@@ -118,30 +134,25 @@ class Game(Cmd):
         try:
             spl = [int(x) for x in arg.split()]
             col, val = spl[0]-1, 0
+            if col == -1: col = None
             if len(spl) == 2:
                 val = spl[1]
-            win = self.board.put(player=self.turn, col=col, value=val)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 1e36cc9902d4618851c916c5091cd46d98c41792
+            win, best = self.board.put(player=self.turn, col=col, value=val,
+                                       wincondition=self.winreq)
             if win:
-                tprint('player {} has won!'.format(self.turn))
                 print(REVERSE, [RED, YELLOW][self.turn],
-                      '{:>{w}}'.format(w=80), RESET)
-                raise SystemExit
-<<<<<<< HEAD
-=======
-=======
-            print(win)
->>>>>>> 09ded09e4ff81429bae403a28ca8bc0afdf058e2
->>>>>>> 1e36cc9902d4618851c916c5091cd46d98c41792
+                      '{o:>{w}}'.format(o='', w=80), RESET, file=stderr)
+                tprint('player  {}\nhas won!\n{} in a row'.format(self.turn,
+                                                                  best))
+                print(REVERSE, [RED, YELLOW][self.turn],
+                      '{o:>{w}}\n'.format(o='', w=80), RESET, file=stderr)
+                self.exit(None)
+
             self.turn = (self.turn + 1) % 2
             self.status()
         except (ValueError, IndexError):
             err()
-            print('need to specify a proper column number that\'s an integer',
-                  file=stderr)
+            print('bad column index', file=stderr)
         except RuntimeError:
             err()
             print('maximum height in column reached', file=stderr)
@@ -151,6 +162,17 @@ class Game(Cmd):
         if resp in {'', 'y', 'Y', 'yes', 'ye'}:
             self.newgame()
         return
+
+    def wincondition(self, arg=None) -> 'loop':
+        if not arg:
+            print(self.winreq)
+        else:
+            try:
+                x = int(arg)
+                self.winreq = x
+            except ValueError:
+                err()
+                print('bad argument to wincondition', file=stderr)
 
     def emptyline(self):
         '''what to do with an empty prompt'''
@@ -170,10 +192,18 @@ class Game(Cmd):
     def help(self, arg=None) -> 'loop':
         '''show helpful usage message'''
         help = '''
-        {bold}newgame [row col]{reset}:
+        {bold}newgame [ROW COL]{reset}:
             initiates a game of bet-connect4
 
-            [row col]: makes the board dimensions row, col
+            [ROW COL]: makes the board dimensions row, col
+
+
+        {bold}wincondition [NUM]{reset}:
+            gets the winning condition.
+
+            [NUM]: set the winning condition to NUM. default is 4 ('connect 4'),
+                   so using this command would set the winning condition
+                   to something else.
 
 
         {bold}status{reset}:
@@ -181,21 +211,26 @@ class Game(Cmd):
             including players, their money, and who goes next
 
 
-        {bold}[play] col [value]{reset}:
+        {bold}[play] COL [VALUE]{reset}:
             plays the next turn
 
-            col (required): column number to play coin in
-            [value]: amount to bet on this coin location
+            COL (required): column number to play coin in
+            [VALUE]: amount to bet on this coin location
 
 
         {bold}reset{reset}:
             resets the current game progress and starts over
+
 
         {bold}exit|quit|q|close{reset}:
             exits the program
 
         '''.format(bold=BOLD, reset=RESET)
         print(help)
+
+    def license(self, arg=None) -> 'loop':
+        '''shows license text'''
+        print(LICENSE)
 
     def exit(self, arg=None) -> 'loop':
         '''exit program'''
