@@ -94,8 +94,12 @@ class Board:
         if self.lastmove is None: raise
         pass
 
-    def checkwin(self, r, c):
-        pass
+    def checkwin(self, r, c, connect=4):
+        for xmult in {0,1,-1}:
+            for ymult in {0,1}:
+                cons = 0
+                for cell in range(1, connect):
+                    return
 
 if __name__ == '__main__':
     b = Board()
