@@ -1,7 +1,11 @@
 ## pyConnect4
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
+<<<<<<< HEAD
 
+=======
+---
+>>>>>>> 38b70e7114b915eea4c3042e68149d0a55eba0a4
 **pyConnect4** is a command-line application in Python that lets you play connect 4 in your terminal!
 
 ### Features:
