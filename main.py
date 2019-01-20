@@ -4,6 +4,8 @@ from color import *
 from board import Board
 from art import tprint
 import random
+import inspect
+import types
 
 def err():
     print(RED + 'ERR: ' + RESET, file=stderr, end='')
@@ -13,6 +15,15 @@ def info():
 print("welcome to\n" + BOLD + "bet" + RED + "connect" + GREEN + "4" + RESET)
 tprint("bet connect 4", font='bell')
 
+def mklooped(cls):
+    for name, ob in inspect.getmembers(cls):
+        if not type(ob) is types.FunctionType: continue
+        if getattr(ob, '__annotations__').get('return', None) == 'loop':
+            setattr(cls, 'do_' + ob.__name__, ob)
+    return cls
+
+
+@mklooped
 class Game(Cmd):
     intro = '''
     This program comes with ABSOLUTELY NO WARRANTY.
@@ -55,7 +66,8 @@ class Game(Cmd):
     #     usage:
     #     '''
 
-    def do_newgame(self, arg=None):
+
+    def newgame(self, arg=None) -> 'loop':
         '''create a new game.
         usage: new_game [rows cols]
         default value: new_game [8 9]
@@ -75,7 +87,7 @@ class Game(Cmd):
 
         self.do_status()
 
-    def do_status(self, arg=None):
+    def status(self, arg=None) -> 'loop':
         '''show the current game status'''
         if self.board is None:
             err()
@@ -90,7 +102,7 @@ class Game(Cmd):
                 print(REVERSE, end='')
             print(playerstats[1])
 
-    def do_play(self, arg=None):
+    def play(self, arg=None) -> 'loop':
         '''play the next turn'''
         if self.board is None:
             err()
@@ -112,7 +124,7 @@ class Game(Cmd):
             err()
             print('maximum height in column reached', file=stderr)
 
-    def do_reset(self, arg=None):
+    def reset(self, arg=None) -> 'loop':
         resp = input('reset current game? [y]/n')
         if resp in {'', 'y', 'Y', 'yes', 'ye'}:
             self.do_newgame()
@@ -129,7 +141,7 @@ class Game(Cmd):
             self.do_exit(line)
         super().default(line)
 
-    def do_help(self, arg=None):
+    def help(self, arg=None) -> 'loop':
         '''show helpful usage message'''
         help = '''
         {bold}newgame [row col]{reset}:
@@ -156,7 +168,7 @@ class Game(Cmd):
         '''.format(bold=BOLD, reset=RESET)
         print(help)
 
-    def do_exit(self, arg):
+    def exit(self, arg) -> 'loop':
         '''exit program'''
         raise SystemExit
 
