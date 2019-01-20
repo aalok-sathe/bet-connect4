@@ -3,6 +3,11 @@ convention: bottom row first
 """
 from color import *
 
+def err():
+    print(RED + 'ERR: ' + RESET, file=stderr, end='')
+def info():
+    print(YELLOW + 'ERR: ' + RESET, file=stderr, end='')
+
 # def terminal_size():
 #     import fcntl, termios, struct
 #     th, tw, hp, wp = struct.unpack('HHHH',
