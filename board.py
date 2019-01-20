@@ -27,9 +27,12 @@ class Board:
         color = None
         value = None
 
-        def __init__(self, player=None, color=WHITE, value=0):
+        def __init__(self, player=None, value=0, color=WHITE):
             self.player = player
-            self.color = color
+            if player is None:
+                self.color = color
+            else:
+                self.color = [RED, YELLOW][player]
             assert type(value) in {float, int}, 'invalid value of coin'
             self.value = value
 
@@ -61,13 +64,15 @@ class Board:
         self.board = board
         self.height = [0] * self.C
 
-    def put(self, player=0, col=None):
+    def put(self, player=0, col=None, value=0):
         if col is None:
             raise ValueError('no column supplied')
         if self.height[col] >= self.R:
             raise RuntimeError('maximum height reached')
-        self.board[self.height[col]][col] = None#TODO
+        self.board[self.height[col]][col] = self.Coin(player, value)
+        self.checkwin(self.height[col], col)
         self.height[col] += 1
+
 
     def undo(self):
         if self.lastmove is None: raise
