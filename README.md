@@ -51,7 +51,7 @@ is recreated here for you. you can play this version of the game
 by specifying only the column, and not 'value' when you play (for
 more instructions see below).
 
-##### betting connect 4
+##### betting connect 4 [WIP]
 in the proposed betting version of connect 4, there are some
 additional rules.
 - each coin a player inserts will have a cost to insert, _c_.
