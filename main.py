@@ -12,6 +12,13 @@ def err():
 def info():
     print(YELLOW + 'INFO: ' + RESET, file=stderr, end='')
 
+# def terminal_size():
+#     import fcntl, termios, struct
+#     th, tw, hp, wp = struct.unpack('HHHH',
+#         fcntl.ioctl(0, termios.TIOCGWINSZ,
+#         struct.pack('HHHH', 0, 0, 0, 0)))
+#     return tw, th
+
 print("welcome to\n" + BOLD + "bet" + RED + "connect" + GREEN + "4" + RESET)
 tprint("bet connect 4", font='bell')
 
@@ -114,7 +121,11 @@ class Game(Cmd):
             if len(spl) == 2:
                 val = spl[1]
             win = self.board.put(player=self.turn, col=col, value=val)
-            print(win)
+            if win:
+                tprint('player {} has won!'.format(self.turn))
+                print(REVERSE, [RED, YELLOW][self.turn],
+                      '{:>{w}}'.format(w=80), RESET)
+                raise SystemExit
             self.turn = (self.turn + 1) % 2
             self.status()
         except (ValueError, IndexError):
@@ -176,7 +187,7 @@ class Game(Cmd):
         '''.format(bold=BOLD, reset=RESET)
         print(help)
 
-    def exit(self, arg) -> 'loop':
+    def exit(self, arg=None) -> 'loop':
         '''exit program'''
         raise SystemExit
 

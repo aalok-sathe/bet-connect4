@@ -9,12 +9,6 @@ def err():
 def info():
     print(YELLOW + 'INFO: ' + RESET, file=stderr, end='')
 
-# def terminal_size():
-#     import fcntl, termios, struct
-#     th, tw, hp, wp = struct.unpack('HHHH',
-#         fcntl.ioctl(0, termios.TIOCGWINSZ,
-#         struct.pack('HHHH', 0, 0, 0, 0)))
-#     return tw, th
 
 class Board:
     R = None
@@ -123,8 +117,9 @@ class Board:
                             break
                     except IndexError:
                         break
-                info(); print(this_coin,xmult,ymult,consec, file=stderr)
-                if consec >= connect: return True, xmult, ymult, consec
+                info()
+                print(this_coin,xmult,ymult,consec, file=stderr)
+                if consec >= connect: return True#, xmult, ymult, consec
         return False
 
 if __name__ == '__main__':
