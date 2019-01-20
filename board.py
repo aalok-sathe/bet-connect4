@@ -92,6 +92,7 @@ class Board:
 
     def checkwin(self, r, c, connect=4):
         this_coin = self.board[r][c]
+        info(); print(this_coin,r,c, file=stderr)
         for xmult in {0,1,-1}:
             for ymult in {0,1}:
                 if xmult == ymult == 0: continue
