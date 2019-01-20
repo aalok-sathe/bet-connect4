@@ -93,13 +93,18 @@ class Board:
 
     def checkwin(self, r, c, connect=4):
         this_coin = self.board[r][c]
-        info(); print(this_coin,r,c, file=stderr)
+        info()
+        print('inserted at height: {}, col: {}'.format(r+1, c+1), file=stderr)
+        info()
+        print('conducting win checks with win condition {}'.format(connect),
+              file=stderr)
         bestconsec = 1
         for xmult in {0,1,-1}:
             for ymult in {0,1}:
                 if xmult == ymult == 0: continue
                 consec = 1
                 for dist in range(1, connect):
+                    if r+ymult*dist <=0 or c+xmult*dist <= 0: continue
                     try:
                         o_coin = self.board[r+ymult*dist][c+xmult*dist]
                         if o_coin.player is None: break
@@ -121,7 +126,9 @@ class Board:
                     except IndexError:
                         break
                 info()
-                print(this_coin,xmult,ymult,consec, file=stderr)
+                print('coin: {}, xmult: {}, '
+                      'ymult: {}, consec: {}'.format(this_coin, xmult, ymult,
+                                                     consec), file=stderr)
                 bestconsec = max(bestconsec, consec)
         if bestconsec >= connect: return True, bestconsec#, xmult, ymult, consec
         return False, 0
