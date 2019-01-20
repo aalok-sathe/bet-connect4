@@ -38,6 +38,7 @@ in your terminal!
 #### installation
     $   git clone https://github.com/aalok-sathe/bet-connect4.git
     $   cd bet-connect4
+    $   python3 -m pip install [--user] -r requirements.txt
 
 #### running
     $   python3 betconnect4.py
