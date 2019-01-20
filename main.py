@@ -22,7 +22,7 @@ class Game(Cmd):
     '''
     board = None
     turn = None
-    STARTMONEY = 100
+    STARTMONEY = float('inf')
 
     class Player:
         money = None
@@ -55,7 +55,7 @@ class Game(Cmd):
     #     usage:
     #     '''
 
-    def do_new_game(self, arg):
+    def do_newgame(self, arg=None):
         '''create a new game.
         usage: new_game [rows cols]
         default value: new_game [8 9]
@@ -75,7 +75,7 @@ class Game(Cmd):
 
         self.do_status()
 
-    def do_status(self, arg):
+    def do_status(self, arg=None):
         '''show the current game status'''
         if self.board is None:
             err()
@@ -84,20 +84,39 @@ class Game(Cmd):
             playerstats = [str(p) for p in self.players]
             print(self.board)
             if self.turn == 0:
-                print(REVERSE)
+                print(REVERSE, end='')
             print(playerstats[0])
             if self.turn == 1:
-                print(REVERSE)
+                print(REVERSE, end='')
             print(playerstats[1])
 
-    def do_play(self, arg):
+    def do_play(self, arg=None):
         '''play the next turn'''
         if self.board is None:
             err()
             print('need to create a new game first', file=stderr)
-        self.turn = (self.turn + 1) % 2
+            return
+        try:
+            spl = [int(x) for x in arg.split()]
+            col, val = spl[0]-1, 0
+            if len(spl) == 2:
+                val = spl[1]
+            self.board.put(player=self.turn, col=col, value=val)
+            self.turn = (self.turn + 1) % 2
+            self.do_status()
+        except (ValueError, IndexError):
+            err()
+            print('need to specify a proper column number that\'s an integer',
+                  file=stderr)
+        except RuntimeError:
+            err()
+            print('maximum height in column reached', file=stderr)
 
-        self.do_status(None)
+    def do_reset(self, arg=None):
+        resp = input('reset current game? [y]/n')
+        if resp in {'', 'y', 'Y', 'yes', 'ye'}:
+            self.do_newgame()
+        return
 
     def emptyline(self):
         '''what to do with an empty prompt'''
@@ -110,10 +129,10 @@ class Game(Cmd):
             self.do_exit(line)
         super().default(line)
 
-    def do_help(self, arg):
+    def do_help(self, arg=None):
         '''show helpful usage message'''
         help = '''
-        {bold}new_game [row col]{reset}:
+        {bold}newgame [row col]{reset}:
             initiates a game of bet-connect4
 
             [row col]: makes the board dimensions row, col
