@@ -3,7 +3,7 @@ This file houses POSIX codes to format text in a terminal.
 This file and its contents is to be treated as a Python source file, and as
 though it were housing an enum.
 """
-from colored import fgcol, bgcol, colattr
+# from colored import fgcol, bgcol, colattr
 
 RED = "\033[1;31m"
 GREEN = "\033[1;32m"
