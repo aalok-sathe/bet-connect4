@@ -16,17 +16,34 @@ def info():
 #     return tw, th
 
 class Board:
-    C = None
     R = None
+    C = None
     board = None
+    height = None
+    lastmove = None
+
+    class Coin:
+        player = None # 0 or 1
+        color = None
+        value = None
+
+        def __init__(self, player=None, color=WHITE, value=0):
+            self.player = player
+            self.color = color
+            assert type(value) in {float, int}, 'invalid value of coin'
+            self.value = value
+
+        def __str__(self):
+            return self.color + str(self.value) + RESET
+
 
     def __init__(self, rows=8, cols=9):
-        self.C = cols
         self.R = rows
+        self.C = cols
         self.construct()
 
     def __str__(self):
-        string = REVERSE
+        # string = REVERSE
         string += ' - '*self.C + '\n'
         for row in reversed(self.board):
             for colval in row:
