@@ -39,6 +39,9 @@ class Board:
         def __str__(self):
             return self.color + str(self.value) + RESET
 
+        def str_(self):
+            return self.color, str(self.value)
+
 
     def __init__(self, rows=8, cols=9):
         self.R = rows
